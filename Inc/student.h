@@ -21,7 +21,7 @@
 /* defines */
 
 #define MAX_SUBJECTS 10U
-#define MAX_NAME_LENGTH 50U
+#define MAX_NAME_LENGTH 100U
 #define MAX_ADDRESS_LENGTH 100U
 #define MAX_STUDENTS_OCCUPANCY 100U
 
@@ -69,7 +69,7 @@ bool studentDeleteByName(uint8_t* pucName);
 bool studentDeleteByRoll(uint32_t ulRoll);
 bool studentDeleteAll(void);
 bool studentListSearchByName(uint8_t* pucName);
-bool PrintStudentInfo(student* pstInfo);
+bool studentPrintInfo(student* pstInfo);
 bool studentListSortByName(void);
 bool studentListSortByRoll(void);
 bool studentListSortByRank(void);

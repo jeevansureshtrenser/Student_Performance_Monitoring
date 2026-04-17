@@ -18,7 +18,7 @@
 #define DEF_CLEAR 0U
 
 #define MENU_OPTIONS_COUNT 4U
-#define LIST_OPTIONS_COUNT 4U
+#define LIST_OPTIONS_COUNT 5U
 #define DELETE_OPTIONS_COUNT 3U
 
 /* typedefs */
@@ -52,7 +52,7 @@ bool menuListSearchByName(void);	// Ask name, and show result
 bool menuListSortByName(void);		// Show all student list sorted by Name(Alphabetically)
 bool menuListSortByRoll(void);		// Show all student list sorted by Roll number
 bool menuListSortByRank(void);		// Show all student list sorted by Rank
-
+bool menuListStudentInfo(void);		// Show all student list without sorting
 // Delete Student Menu
 bool menuDeleteByName(void);		// Ask name, and delete student
 bool menuDeleteByRoll(void);		// Ask Roll, and delete student

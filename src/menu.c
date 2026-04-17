@@ -39,6 +39,7 @@ bool (*menuListFunctionsptr[LIST_OPTIONS_COUNT])(void) =
     menuListSortByName,
     menuListSortByRoll,
     menuListSortByRank,
+    menuListStudentInfo, // Added option to list all students without sorting
     };
 
 bool (*menuDeleteFunctionsptr[DELETE_OPTIONS_COUNT])(void) = 
@@ -48,14 +49,77 @@ bool (*menuDeleteFunctionsptr[DELETE_OPTIONS_COUNT])(void) =
     menuDeleteAll,
     };
 
+bool menuGetInput(uint8_t* pucBuffer, uint32_t ulBufferSize)
+    {
+    uint8_t buffer[MAX_NAME_LENGTH] = {0};
+    uint8_t ucCount = 0;
+    uint8_t ucChar = 0;
+     if (pucBuffer == NULL || ulBufferSize == 0)
+        {
+        printf("Invalid input buffer.\n");
+        return false;
+        }
+     else
+        {
+        /* No additional action needed */
+        }
+     if (ulBufferSize > MAX_NAME_LENGTH)
+        {        printf("Input buffer size exceeds maximum allowed length.\n");
+        return false;
+        }
+    if (pucBuffer == NULL || ulBufferSize == 0)
+        {
+        printf("Invalid input buffer.\n");
+        return false;
+        }
+    else
+        {
+        /* No additional action needed */
+        }
+    while (ucCount < sizeof(buffer) - 1) 
+        {
+        ucChar = getchar();
+        if(ucChar == EOF)
+            {
+            printf("End of input detected.\n");
+            break; // Stop reading input on EOF
+            }
+         else
+            {
+            /* No additional action needed */
+            }
+        if (ucChar == '\n') 
+            {
+            continue; // Stop reading input on newline
+            }
+        if (ucChar == '#')
+            {
+               break; // Stop reading input on '#' character
+            }
+        buffer[ucCount++] = ucChar;
+    }
+    buffer[ucCount] = '\0';
+    if (buffer[0] == '\0')
+        {
+        printf("No input received.\n");
+        return false;
+        }
+    else
+        {
+        /* No additional action needed */
+        }
+    strncpy((char*)pucBuffer, (char*)buffer, ulBufferSize);
+    return true;
+    }
+
 
 /** menuMain - Displays the main menu and handles user input.
 * return -  true if successful, false otherwise.
 */
 bool menuMain(void)
     {
-    uint32_t ucOption = DEF_CLEAR;
-
+    uint8_t ucOption = DEF_CLEAR;
+    uint8_t ucChoice = DEF_CLEAR; // Buffer to hold user input for validation
     printf("\n=== Main Menu ===\n");
     printf("1. Student Overview\n");
     printf("2. Add Student\n");
@@ -63,25 +127,53 @@ bool menuMain(void)
     printf("4. Delete Student\n");
     printf("5. Exit\n");
     printf("Enter your choice: ");
-    scanf("%d", &ucOption);
-    if (ucOption >= 1 && ucOption <= MENU_OPTIONS_COUNT)
+    scanf("%hhd", &ucOption);
+    ucChoice = ucOption - 1; // Store the original user input for validation
+    if(ucChoice == EXIT)
         {
-        return menuFunctionptr[ucOption - 1]();
+        return false; // Exit the program
+        }
+     else if (ucOption >= 1 && ucOption <= MENU_OPTIONS_COUNT)
+        {
+        return menuFunctionptr[ucChoice]();
         }
     else
         {
         printf("Invalid choice. Please try again.\n");
+        return false;
         }
     return true;
     }
-
+/*
+* menuStudentOverview - Displays an overview of all students.
+* return -  true if successful, false otherwise.
+*/
 bool menuStudentOverview(void)
     {
     printf("Student Overview:\n");
+        uint32_t ulCount = 0;
+    if (!studentGetCount(&ulCount))
+        {        printf("Failed to get student count.\n");
+        return false;
+        }
+    printf("Total Students: %d\n", ulCount);
+    uint8_t pucAvgMarks[MAX_SUBJECTS] = {0};
+    if (!studentGetAvgMarksOfSubjects(pucAvgMarks))
+        {        printf("Failed to get average marks of subjects.\n");
+        return false;
+        }
+    printf("Average Marks for Each Subject:\n");
+    for (uint8_t i = 0; i < MAX_SUBJECTS; i++)
+        {
+        printf("Subject %d: %d\n", i + 1, pucAvgMarks[i]);
+        }   
     return true;
     }
 
-
+/*
+* menuFillMarks - Fills the marks for a student.
+* return -  true if successful, false otherwise.
+*/
 bool menuFillMarks(uint8_t* pucMarks)
     {
     for (uint8_t i = 0; i < MAX_SUBJECTS; i++)
@@ -100,10 +192,12 @@ bool menuFillMarks(uint8_t* pucMarks)
         }
     return true;
     }
-
+/*
+* menuFillStudentInfo - Fills the information for a student.
+* return -  true if successful, false otherwise.
+*/
 bool menuFillStudentInfo(student* pstInfo)
     {
-    
     if (pstInfo == NULL)
         {
         printf("Memory allocation failed for student name.\n");
@@ -114,16 +208,22 @@ bool menuFillStudentInfo(student* pstInfo)
         /* No additional action needed */
         }
     pstInfo->pucName = (uint8_t*)malloc(MAX_NAME_LENGTH * sizeof(uint8_t));
-    printf("Enter Student Name: ");
-    scanf("%s", pstInfo->pucName);
-    
-    if (pstInfo->pucName[0] == '\0')
+     if (pstInfo->pucName == NULL)
         {
-        printf("Invalid name input.\n");
-        free(pstInfo->pucName);
+        printf("Memory allocation failed for student name.\n");
         return false;
         }
-    printf("Enter Student name: %s", pstInfo->pucName);
+    else
+        {
+        /* No additional action needed */
+        }
+    printf("Enter Student Name followed by a #: ");
+    if (!menuGetInput(pstInfo->pucName, MAX_NAME_LENGTH))
+    {
+        printf("Failed to get student name.\n");
+        free(pstInfo->pucName);
+        return false;
+    }
     printf("Enter Roll Number: ");
     scanf("%d", &pstInfo->ulRoll);
     if (pstInfo->ulRoll == 0)
@@ -152,20 +252,25 @@ bool menuFillStudentInfo(student* pstInfo)
         {
         /* No additional action needed */
         }
-    printf("Enter Student Address: ");
-    scanf("%s", pstInfo->pucAddress);
-    if (pstInfo->pucAddress == NULL)
-    {
+
+    printf("Enter Student Address followed by a #: ");
+    if (!menuGetInput(pstInfo->pucAddress, MAX_ADDRESS_LENGTH))
+        {
+        printf("Failed to get student address.\n");
+        free(pstInfo->pucName);
+        free(pstInfo->pucAddress);
         return false;
-    }
+        }
     else
-    {
-        /* No additional action needed */
-    }
+        {/* No additional action needed */
+        }
 
     return true;
 }
-
+/*
+* menuAddStudent - Adds a new student to the system.
+* return -  true if successful, false otherwise.
+*/
 bool menuAddStudent(void)
     {
     static uint32_t s_ulStudentCount = 0;
@@ -218,7 +323,10 @@ bool menuAddStudent(void)
     printf("Student added successfully! Total students: %d\n", s_ulStudentCount);
     return true;
     }
-
+/*
+* menuListStudent - Lists all students.
+* return -  true if successful, false otherwise.
+*/
 bool menuListStudent(void)
     {
     uint8_t ucOption = DEF_CLEAR;
@@ -228,6 +336,7 @@ bool menuListStudent(void)
     printf("2. Sort by Name\n");
     printf("3. Sort by Roll Number\n");
     printf("4. Sort by Rank\n");
+    printf("5. All Students\n");
     printf("Enter your choice: ");
     scanf("%hhd", &ucOption);
     if (ucOption >= 1 && ucOption <= LIST_OPTIONS_COUNT)
@@ -241,7 +350,10 @@ bool menuListStudent(void)
         }
     return true;
     }
-
+/*
+* menuDeleteStudent - Deletes a student from the system.
+* return -  true if successful, false otherwise.
+*/
 bool menuDeleteStudent(void)
     {
     uint8_t ucOption = DEF_CLEAR;
@@ -263,7 +375,10 @@ bool menuDeleteStudent(void)
         }
     return true;
     }
-
+/*
+* menuListSearchByName - Searches for a student by name.
+* return -  true if successful, false otherwise.
+*/
 bool menuListSearchByName(void)
     {
     uint8_t *pucName = NULL;
@@ -290,7 +405,10 @@ bool menuListSearchByName(void)
     free(pucName);
     return true;
     }
-
+/*
+* menuListSortByName - Sorts students by name.
+* return -  true if successful, false otherwise.
+*/
 bool menuListSortByName(void)
     {
     printf("List Students Sorted by Name:\n");
@@ -302,7 +420,10 @@ bool menuListSortByName(void)
     return true;
     }
 
-
+/*
+* menuListSortByRoll - Sorts students by roll number.
+* return -  true if successful, false otherwise.
+*/
 bool menuListSortByRoll(void)
     {
     printf("List Students Sorted by Roll Number:\n");
@@ -314,6 +435,10 @@ bool menuListSortByRoll(void)
     return true;
     }
 
+/*
+* menuListSortByRank - Sorts students by rank.
+* return -  true if successful, false otherwise.
+*/
 bool menuListSortByRank(void)
     {
     printf("List Students Sorted by Rank:\n");
@@ -325,6 +450,10 @@ bool menuListSortByRank(void)
     return true;
     }
 
+/*
+* menuDeleteByName - Deletes a student by name.
+* return -  true if successful, false otherwise.
+*/
 bool menuDeleteByName(void)
     {
     uint8_t *ucname = NULL;
@@ -347,10 +476,14 @@ bool menuDeleteByName(void)
         free(ucname);
         return false;
         }
-        free(ucname);
+    free(ucname);
     return true;
     }
 
+/*
+* menuDeleteByRoll - Deletes a student by roll number.
+* return -  true if successful, false otherwise.
+*/
 bool menuDeleteByRoll(void)
     {
     uint32_t ulRoll = DEF_CLEAR;
@@ -364,6 +497,10 @@ bool menuDeleteByRoll(void)
     return true;
     }
 
+/*
+* menuDeleteAll - Deletes all students from the system.
+* return -  true if successful, false otherwise.
+*/
 bool menuDeleteAll(void)
     {
     printf("Delete All Students:\n");
@@ -375,4 +512,14 @@ bool menuDeleteAll(void)
     return true;
     }
 
+bool menuListStudentInfo(void)
+    {
+    printf("List All Students:\n");
+    if(!studentPrintInfo(NULL)) // Passing NULL to print all students
+        {
+        printf("Failed to list all students.\n");
+        return false;
+        }
+    return true;
+    }
 
