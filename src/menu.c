@@ -11,6 +11,7 @@
 /* includes */ 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "student.h"
 #include "menu.h"
 
@@ -102,9 +103,8 @@ bool menuFillMarks(uint8_t* pucMarks)
 
 bool menuFillStudentInfo(student* pstInfo)
     {
-    printf("Enter Student Name: ");
-    scanf("%s", pstInfo->pucName);
-    if (pstInfo->pucName == NULL)
+    
+    if (pstInfo == NULL)
         {
         printf("Memory allocation failed for student name.\n");
         return false;
@@ -113,6 +113,17 @@ bool menuFillStudentInfo(student* pstInfo)
         {
         /* No additional action needed */
         }
+    pstInfo->pucName = (uint8_t*)malloc(MAX_NAME_LENGTH * sizeof(uint8_t));
+    printf("Enter Student Name: ");
+    scanf("%s", pstInfo->pucName);
+    
+    if (pstInfo->pucName[0] == '\0')
+        {
+        printf("Invalid name input.\n");
+        free(pstInfo->pucName);
+        return false;
+        }
+    printf("Enter Student name: %s", pstInfo->pucName);
     printf("Enter Roll Number: ");
     scanf("%d", &pstInfo->ulRoll);
     if (pstInfo->ulRoll == 0)
@@ -130,6 +141,17 @@ bool menuFillStudentInfo(student* pstInfo)
         printf("Failed to fill student marks.\n");
         return false;
     }
+    pstInfo->pucAddress = (uint8_t*)malloc(MAX_ADDRESS_LENGTH * sizeof(uint8_t));
+     if (pstInfo->pucAddress == NULL)
+        {
+        printf("Memory allocation failed for student address.\n");
+        free(pstInfo->pucName);
+        return false;
+        }
+    else
+        {
+        /* No additional action needed */
+        }
     printf("Enter Student Address: ");
     scanf("%s", pstInfo->pucAddress);
     if (pstInfo->pucAddress == NULL)
@@ -153,30 +175,36 @@ bool menuAddStudent(void)
         return false;
         }
     
-    student newStudent = {0};
-    
-    if (!menuFillStudentInfo(&newStudent))
+    student *newStudent = (student*)malloc(sizeof(student));
+    memset(newStudent, 0, sizeof(student)); // Initialize the allocated memory to zero
+    if (newStudent == NULL)
+        {
+        printf("Failed to allocate memory for new student.\n");
+        return false;
+        }
+
+    if (!menuFillStudentInfo(newStudent))
         {
         printf("Failed to add student. Please try again.\n");
         return false;
         }
     printf("Calculating total marks, average, grade, and rank...\n");
-    if (!studentCalcSum(&newStudent, &newStudent.ulSum))
+    if (!studentCalcSum(newStudent, &newStudent->ulSum))
         {
         printf("Failed to calculate sum of marks.\n");
         return false;
         }
-    if (!studentCalcAverage(&newStudent, &newStudent.fAvg))
+    if (!studentCalcAverage(newStudent, &newStudent->fAvg))
         {
         printf("Failed to calculate average marks.\n");
         return false;
         }
-    if (!studentCalcGrades(&newStudent, &newStudent.ucGrade))
+    if (!studentCalcGrades(newStudent, &newStudent->ucGrade))
         {
         printf("Failed to calculate grade.\n");
         return false;
         }
-    if (!studentAdd(&newStudent))
+    if (!studentAdd(newStudent))
         {
         printf("Failed to add student.\n");
         return false;
@@ -266,6 +294,11 @@ bool menuListSearchByName(void)
 bool menuListSortByName(void)
     {
     printf("List Students Sorted by Name:\n");
+    if(!studentListSortByName())
+        {
+        printf("Failed to list students sorted by name.\n");
+        return false;
+        }
     return true;
     }
 
@@ -273,13 +306,22 @@ bool menuListSortByName(void)
 bool menuListSortByRoll(void)
     {
     printf("List Students Sorted by Roll Number:\n");
-   
+    if(!studentListSortByRoll())
+        {
+        printf("Failed to list students sorted by roll number.\n");
+        return false;
+        }
     return true;
     }
 
 bool menuListSortByRank(void)
     {
     printf("List Students Sorted by Rank:\n");
+    if(!studentListSortByRank())
+        {
+        printf("Failed to list students sorted by rank.\n");
+        return false;
+        }
     return true;
     }
 

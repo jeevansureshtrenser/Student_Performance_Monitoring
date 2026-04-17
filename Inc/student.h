@@ -70,5 +70,7 @@ bool studentDeleteByRoll(uint32_t ulRoll);
 bool studentDeleteAll(void);
 bool studentListSearchByName(uint8_t* pucName);
 bool PrintStudentInfo(student* pstInfo);
-
+bool studentListSortByName(void);
+bool studentListSortByRoll(void);
+bool studentListSortByRank(void);
 #endif // __INCstudenth
