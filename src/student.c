@@ -524,7 +524,7 @@ bool studentListSortByName(void)
         }
         while (pstCurrent != NULL)
         {
-            if(strcmp((char*)pstTemp->pucName, (char*)pstCurrent->pucName) < 0)
+            if(strncmp((char*)pstTemp->pucName, (char*)pstCurrent->pucName, MAX_NAME_LENGTH) < 0)
             {
                 // Swap the student information
                 student temp = *pstCurrent;

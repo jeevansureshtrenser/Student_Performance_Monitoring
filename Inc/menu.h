@@ -21,6 +21,8 @@
 #define LIST_OPTIONS_COUNT 5U
 #define DELETE_OPTIONS_COUNT 3U
 
+#define WAIT_SEC 5
+
 /* typedefs */
 
 typedef enum
@@ -57,6 +59,6 @@ bool menuListStudentInfo(void);		// Show all student list without sorting
 bool menuDeleteByName(void);		// Ask name, and delete student
 bool menuDeleteByRoll(void);		// Ask Roll, and delete student
 bool menuDeleteAll(void);			// Delete all students
-
-
+// Failsafe mode
+bool FailSafeMode()
 #endif // __INCmenuh

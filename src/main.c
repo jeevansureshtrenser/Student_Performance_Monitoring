@@ -25,14 +25,29 @@
 */
 int main()
     {
+    uint8_t ucFailSafeMode = 0;
     while (FOREVER)
         {
         // Loop until user exits the program
-        if (!menuMain())
+        if( ucFailSafeMode == 1)
             {
-            printf("Exiting the program.\n");
-            break; // Exit the loop and end the program
+            if(!FailSafeMode())
+            {
+                printf("Exit the application\n");
+                break;
             }
+            sleep(WAIT_SEC);
+            }
+        else
+            {
+            if(!menuMain())
+                {
+                printf("Error Running the Program.\n");
+                printf("Entering to Flashing Mode\n");
+                ucFailSafeMode = 1;
+                }
+            }
+
         }
 
     return 0;

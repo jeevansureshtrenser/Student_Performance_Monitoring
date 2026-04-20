@@ -523,3 +523,30 @@ bool menuListStudentInfo(void)
     return true;
     }
 
+/*
+* FailSafeMode - For setting safe mode when fails.
+* return -  true if successful, false otherwise.
+*/
+bool FailSafeMode()
+{
+    static uint8_t ucFailCount = 0;
+    uint8_t ucChar = 0;
+    if(ucFailCount == MAX_TRY_COUNT)
+    {
+        return false;
+    }
+    Printf("Press any Button To continue \n");
+    ucChar = getchar();
+    if( ucChar > 0)
+    {
+        ucFailCount = 0;
+        return true;
+    }
+    else
+    {
+        ucFailCount++;
+        /* No process*/
+    }
+    return true;
+}
+
