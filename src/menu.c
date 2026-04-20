@@ -128,7 +128,7 @@ bool menuMain(void)
     printf("4. Delete Student\n");
     printf("5. Exit\n");
     printf("Enter your choice: ");
-    iReadCount = scanf("%hhd", &ucOption);
+    iReadCount = scanf("%hhu", &ucOption);
     if(iReadCount == 0)
         {
             printf("Invalid input\n");
@@ -166,7 +166,7 @@ bool menuStudentOverview(void)
         {        printf("Failed to get student count.\n");
         return false;
         }
-    printf("Total Students: %d\n", ulCount);
+    printf("Total Students: %u\n", ulCount);
     uint8_t pucAvgMarks[MAX_SUBJECTS] = {0};
     if (!studentGetAvgMarksOfSubjects(pucAvgMarks))
         {        printf("Failed to get average marks of subjects.\n");
@@ -189,7 +189,7 @@ bool menuFillMarks(uint8_t* pucMarks)
     for (uint8_t i = 0; i < MAX_SUBJECTS; i++)
         {
         printf("Enter marks for subject %d: ", i + 1);
-        if(scanf("%hhd", &pucMarks[i]) == 0)
+        if(scanf("%hhu", &pucMarks[i]) == 0)
             {
                 printf("Invalid mark Input\n");
                 return false;
@@ -340,7 +340,7 @@ bool menuAddStudent(void)
         return false;
         }
     s_ulStudentCount++;
-    printf("Student added successfully! Total students: %d\n", s_ulStudentCount);
+    printf("Student added successfully! Total students: %u\n", s_ulStudentCount);
     return true;
     }
 /*
@@ -358,7 +358,7 @@ bool menuListStudent(void)
     printf("4. Sort by Rank\n");
     printf("5. All Students\n");
     printf("Enter your choice: ");
-    iReadCount = scanf("%hhd", &ucOption);
+    iReadCount = scanf("%hhu", &ucOption);
     if(iReadCount == 0)
         {
         return false;
@@ -391,7 +391,7 @@ bool menuDeleteStudent(void)
     printf("2. Delete by Roll Number\n");
     printf("3. Delete All\n");
     printf("Enter your choice: ");
-    iReadCount = scanf("%hhd", &ucOption);
+    iReadCount = scanf("%hhu", &ucOption);
     if(iReadCount == 0)
         {
         return false;
@@ -535,7 +535,7 @@ bool menuDeleteByRoll(void)
     uint32_t ulRoll = DEF_CLEAR;
     int32_t iReadCount = DEF_CLEAR;
     printf("Delete Student by Roll Number:\n");
-    iReadCount = scanf("%d", &ulRoll);
+    iReadCount = scanf("%u", &ulRoll);
     if(iReadCount == 0)
         {
             printf("Failed to read input\n");
