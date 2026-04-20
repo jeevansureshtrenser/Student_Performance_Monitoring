@@ -2,7 +2,7 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Wall -g -IInc
+CFLAGS = -Wall -g -IInc --analyzer -std=c99
 
 # Target executable
 TARGET = student_performance_monitoring

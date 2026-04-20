@@ -34,7 +34,7 @@ int main()
             if(!FailSafeMode())
             {
                 printf("Exit the application\n");
-                break;
+                return 0;
             }
             sleep(WAIT_SEC);
             }

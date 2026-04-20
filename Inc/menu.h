@@ -22,6 +22,7 @@
 #define DELETE_OPTIONS_COUNT 3U
 
 #define WAIT_SEC 5
+#define MAX_TRY_COUNT 5
 
 /* typedefs */
 
@@ -60,5 +61,5 @@ bool menuDeleteByName(void);		// Ask name, and delete student
 bool menuDeleteByRoll(void);		// Ask Roll, and delete student
 bool menuDeleteAll(void);			// Delete all students
 // Failsafe mode
-bool FailSafeMode()
+bool FailSafeMode(void);
 #endif // __INCmenuh

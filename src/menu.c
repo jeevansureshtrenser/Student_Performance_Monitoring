@@ -119,7 +119,8 @@ bool menuGetInput(uint8_t* pucBuffer, uint32_t ulBufferSize)
 bool menuMain(void)
     {
     uint8_t ucOption = DEF_CLEAR;
-    uint8_t ucChoice = DEF_CLEAR; // Buffer to hold user input for validation
+    uint8_t ucChoice = DEF_CLEAR;
+    uint8_t iReadCount = DEF_CLEAR;
     printf("\n=== Main Menu ===\n");
     printf("1. Student Overview\n");
     printf("2. Add Student\n");
@@ -127,7 +128,16 @@ bool menuMain(void)
     printf("4. Delete Student\n");
     printf("5. Exit\n");
     printf("Enter your choice: ");
-    scanf("%hhd", &ucOption);
+    iReadCount = scanf("%hhd", &ucOption);
+    if(iReadCount == 0)
+        {
+            printf("Invalid input\n");
+            return false;
+        }
+    else
+        {
+            /* No process*/
+        }
     ucChoice = ucOption - 1; // Store the original user input for validation
     if(ucChoice == EXIT)
         {
@@ -179,7 +189,11 @@ bool menuFillMarks(uint8_t* pucMarks)
     for (uint8_t i = 0; i < MAX_SUBJECTS; i++)
         {
         printf("Enter marks for subject %d: ", i + 1);
-        scanf("%hhd", &pucMarks[i]);
+        if(scanf("%hhd", &pucMarks[i]) == 0)
+            {
+                printf("Invalid mark Input\n");
+                return false;
+            }
         if (pucMarks[i] > 100)
             {
             printf("Invalid marks. Please enter a value between 0 and 100.\n");
@@ -198,6 +212,7 @@ bool menuFillMarks(uint8_t* pucMarks)
 */
 bool menuFillStudentInfo(student* pstInfo)
     {
+    int32_t iReadCount = DEF_CLEAR;
     if (pstInfo == NULL)
         {
         printf("Memory allocation failed for student name.\n");
@@ -225,8 +240,8 @@ bool menuFillStudentInfo(student* pstInfo)
         return false;
     }
     printf("Enter Roll Number: ");
-    scanf("%d", &pstInfo->ulRoll);
-    if (pstInfo->ulRoll == 0)
+    iReadCount = scanf("%d", &pstInfo->ulRoll);
+    if (pstInfo->ulRoll == 0 || iReadCount == 0)
         {
         printf("Invalid roll number.\n");
         return false;
@@ -281,12 +296,12 @@ bool menuAddStudent(void)
         }
     
     student *newStudent = (student*)malloc(sizeof(student));
-    memset(newStudent, 0, sizeof(student)); // Initialize the allocated memory to zero
     if (newStudent == NULL)
         {
         printf("Failed to allocate memory for new student.\n");
         return false;
         }
+    memset(newStudent, 0, sizeof(student)); // Initialize the allocated memory to zero
 
     if (!menuFillStudentInfo(newStudent))
         {
@@ -335,7 +350,7 @@ bool menuAddStudent(void)
 bool menuListStudent(void)
     {
     uint8_t ucOption = DEF_CLEAR;
-    
+    int32_t iReadCount = DEF_CLEAR;
     printf("\n=== List Student Menu ===\n");
     printf("1. Search by Name\n");
     printf("2. Sort by Name\n");
@@ -343,7 +358,15 @@ bool menuListStudent(void)
     printf("4. Sort by Rank\n");
     printf("5. All Students\n");
     printf("Enter your choice: ");
-    scanf("%hhd", &ucOption);
+    iReadCount = scanf("%hhd", &ucOption);
+    if(iReadCount == 0)
+        {
+        return false;
+        }
+    else
+        {
+        /* No process*/
+        }
     if (ucOption >= 1 && ucOption <= LIST_OPTIONS_COUNT)
         {
         return menuListFunctionsptr[ucOption - 1]();
@@ -362,13 +385,21 @@ bool menuListStudent(void)
 bool menuDeleteStudent(void)
     {
     uint8_t ucOption = DEF_CLEAR;
-
+    int32_t iReadCount = DEF_CLEAR;
     printf("\n=== Delete Student Menu ===\n");
     printf("1. Delete by Name\n");
     printf("2. Delete by Roll Number\n");
     printf("3. Delete All\n");
     printf("Enter your choice: ");
-    scanf("%hhd", &ucOption);
+    iReadCount = scanf("%hhd", &ucOption);
+    if(iReadCount == 0)
+        {
+        return false;
+        }
+    else
+        {
+        /* No process*/
+        }
     if (ucOption >= 1 && ucOption <= DELETE_OPTIONS_COUNT)
         {
         return menuDeleteFunctionsptr[ucOption - 1]();
@@ -394,7 +425,12 @@ bool menuListSearchByName(void)
         return false;
         }
     printf("Search Student by Name:\n");
-    scanf("%s", pucName);
+    if (!menuGetInput(pucName, MAX_NAME_LENGTH))
+        {
+            printf("Failed to get student name.\n");
+            free(pucName);
+            return false;
+        }
     if (pucName[0] == '\0')
         {
         printf("Invalid name input.\n");
@@ -469,7 +505,12 @@ bool menuDeleteByName(void)
         return false;
         }
     printf("Delete Student by Name:\n");
-    scanf("%s", ucname);
+        if (!menuGetInput(ucname, MAX_NAME_LENGTH))
+        {
+            printf("Failed to get student name.\n");
+            free(ucname);
+            return false;
+        }
     if (ucname[0] == '\0')
         {
         printf("Invalid name input.\n");
@@ -492,8 +533,14 @@ bool menuDeleteByName(void)
 bool menuDeleteByRoll(void)
     {
     uint32_t ulRoll = DEF_CLEAR;
+    int32_t iReadCount = DEF_CLEAR;
     printf("Delete Student by Roll Number:\n");
-    scanf("%d", &ulRoll);
+    iReadCount = scanf("%d", &ulRoll);
+    if(iReadCount == 0)
+        {
+            printf("Failed to read input\n");
+            return false;
+        }
     if (!studentDeleteByRoll(ulRoll))
         {
         printf("Failed to delete student by roll number.\n");
@@ -534,24 +581,24 @@ bool menuListStudentInfo(void)
 */
 bool FailSafeMode()
 {
-    static uint8_t ucFailCount = 0;
+    static uint8_t s_ucFailCount = 0;
     uint8_t ucChar = 0;
-    if(ucFailCount == MAX_TRY_COUNT)
-    {
-        return false;
-    }
-    Printf("Press any Button To continue \n");
+    if(s_ucFailCount == MAX_TRY_COUNT)
+        {
+            return false;
+        }
+    printf("Press any Button To continue \n");
     ucChar = getchar();
     if( ucChar > 0)
-    {
-        ucFailCount = 0;
-        return true;
-    }
+        {
+            s_ucFailCount = 0;
+            return true;
+        }
     else
-    {
-        ucFailCount++;
-        /* No process*/
-    }
+        {
+            s_ucFailCount++;
+            /* No process*/
+        }
     return true;
 }
 

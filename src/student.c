@@ -369,13 +369,13 @@ bool studentDeleteByRoll(uint32_t ulRoll)
                 pstPrevious->pstNext = pstCurrent->pstNext;
                 }
             free(pstCurrent);
-            printf("Student with roll number %d deleted successfully.\n", ulRoll);
+            printf("Student with roll number %u deleted successfully.\n", ulRoll);
             return true;
             }
         pstPrevious = pstCurrent;
         pstCurrent = pstCurrent->pstNext;
         }
-    printf("Student with roll number %d not found.\n", ulRoll);
+    printf("Student with roll number %u not found.\n", ulRoll);
     return false;
     }
 /*
