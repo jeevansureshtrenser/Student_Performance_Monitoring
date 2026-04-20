@@ -277,6 +277,12 @@ bool studentGetAvgMarksOfSubjects(uint8_t* pucAvgMarks)
         {
         /* No additional action needed */
         }
+    
+    if(pstHead == NULL)
+        {
+        printf("No students available to list.\n");
+        return false;
+        }
     student* pstCurrent = pstHead;
     while (pstCurrent != NULL)
         {
@@ -322,6 +328,11 @@ bool studentDeleteByName(uint8_t* pucName)
         printf("Invalid name input.\n");
         return false;
         }
+    if(pstHead == NULL)
+        {
+        printf("No students available to list.\n");
+        return false;
+        }
     student* pstCurrent = pstHead;
     student* pstPrevious = NULL;
     while (pstCurrent != NULL)
@@ -354,6 +365,12 @@ bool studentDeleteByName(uint8_t* pucName)
 */
 bool studentDeleteByRoll(uint32_t ulRoll)
     {
+    
+    if(pstHead == NULL)
+        {
+        printf("No students available to list.\n");
+        return false;
+        }
     student* pstCurrent = pstHead;
     student* pstPrevious = NULL;
     while (pstCurrent != NULL)
@@ -384,6 +401,11 @@ bool studentDeleteByRoll(uint32_t ulRoll)
 */
 bool studentDeleteAll(void)
     {
+    if(pstHead == NULL)
+        {
+        printf("No students available to list.\n");
+        return false;
+        }
     student* pstCurrent = pstHead;
     while (pstCurrent != NULL)
         {
@@ -400,6 +422,11 @@ bool studentListSearchByName(uint8_t* pucName)
     if (pucName == NULL)
         {
         printf("Invalid name input.\n");
+        return false;
+        }
+    if(pstHead == NULL)
+        {
+        printf("No students available to list.\n");
         return false;
         }
         student* pstCurrent = pstHead;
@@ -440,7 +467,12 @@ bool studentPrintInfo(student* pstInfo)
     else
         {/* No additional action needed */
         }
- student* pstCurrent = pstHead;
+    if(pstHead == NULL)
+        {
+        printf("No students available to list.\n");
+        return false;
+        }
+    student* pstCurrent = pstHead;
     if (pstCurrent == NULL)
         {
         printf("No students available to list.\n");
@@ -469,18 +501,18 @@ bool studentPrintInfo(student* pstInfo)
 */
 bool studentListSortByRoll(void)
     {
-        student* pstCurrent = pstHead;
-        student* pstTemp = pstHead->pstNext;
-    if (pstCurrent == NULL)
+    if(pstHead == NULL)
         {
         printf("No students available to list.\n");
         return false;
         }
-    else
+    if(pstHead->pstNext == NULL)
         {
-
-        /* No additional action needed */
+        printf("One student available to list.\n");
+        return false;
         }
+        student* pstCurrent = pstHead;
+        student* pstTemp = pstHead->pstNext;
         while (pstCurrent != NULL)
         {
 
@@ -511,17 +543,18 @@ bool studentListSortByRoll(void)
 */
 bool studentListSortByName(void)
     {
-        student* pstCurrent = pstHead;
-        student* pstTemp = pstHead->pstNext;
-    if (pstCurrent == NULL)
+    if(pstHead == NULL)
         {
         printf("No students available to list.\n");
         return false;
         }
-    else
+    if(pstHead->pstNext == NULL)
         {
-        /* No additional action needed */
+        printf("Only one student available\n");
+        return false;
         }
+        student* pstCurrent = pstHead;
+        student* pstTemp = pstHead->pstNext;
         while (pstCurrent != NULL)
         {
             if(strncmp((char*)pstTemp->pucName, (char*)pstCurrent->pucName, MAX_NAME_LENGTH) < 0)
@@ -546,17 +579,18 @@ bool studentListSortByName(void)
 
 bool studentListSortByRank(void)
     {
-        student* pstCurrent = pstHead;
-        student* pstTemp = pstHead->pstNext;
-    if (pstCurrent == NULL)
+    if(pstHead == NULL)
         {
         printf("No students available to list.\n");
         return false;
         }
-    else
+    if(pstHead->pstNext == NULL)
         {
-        /* No additional action needed */
+        printf("Only one student available\n");
+        return false;
         }
+        student* pstCurrent = pstHead;
+        student* pstTemp = pstHead->pstNext;
         while (pstCurrent != NULL)
         {
                 if(pstTemp->ulRank < pstCurrent->ulRank)
