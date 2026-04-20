@@ -291,27 +291,32 @@ bool menuAddStudent(void)
     if (!menuFillStudentInfo(newStudent))
         {
         printf("Failed to add student. Please try again.\n");
+        free(newStudent);
         return false;
         }
     printf("Calculating total marks, average, grade, and rank...\n");
     if (!studentCalcSum(newStudent, &newStudent->ulSum))
         {
         printf("Failed to calculate sum of marks.\n");
+        free(newStudent);
         return false;
         }
     if (!studentCalcAverage(newStudent, &newStudent->fAvg))
         {
         printf("Failed to calculate average marks.\n");
+        free(newStudent);
         return false;
         }
     if (!studentCalcGrades(newStudent, &newStudent->ucGrade))
         {
         printf("Failed to calculate grade.\n");
+        free(newStudent);
         return false;
         }
     if (!studentAdd(newStudent))
         {
         printf("Failed to add student.\n");
+        free(newStudent);
         return false;
         }
     if (!studentUpdateRank())
