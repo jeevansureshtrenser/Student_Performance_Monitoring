@@ -167,7 +167,11 @@ static bool menuGetInput(uint8_t* pucBuffer, uint32_t ulBufferSize)
                 {
                 if (fgets((char*)pucBuffer, ulBufferSize, stdin) != NULL)
                     {
-                        menuRemoveNewline(pucBuffer);
+                        if(!menuRemoveNewline(pucBuffer))
+                            {
+                            printf("Failed to remove newline character.\n");
+                            bReturn = false;
+                            }
                     }
                     else
                     {
