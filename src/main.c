@@ -1,7 +1,11 @@
 /*
 * main.c - Main entry point for the Student Performance Monitoring System.
 *
-*
+* Copyright (c) 2026 Trenser Technology Solutions. 
+* 
+* The right to copy, distribute, modify, or otherwise make use 
+* of this software may be licensed only pursuant to the terms 
+* of an applicable Trenser Technology Solutions license agreement. 
 */
 
 /* includes */
@@ -25,29 +29,14 @@
 */
 int main()
     {
-    uint8_t ucFailSafeMode = 0;
     while (FOREVER)
         {
-        // Loop until user exits the program
-        if( ucFailSafeMode == 1)
+        if(!menuMain())
             {
-            if(!FailSafeMode())
-            {
-                printf("Exit the application\n");
-                return 0;
+            printf("Error Running the Program.\n");
+            printf("Entering to Flashing Mode\n");
+            return EXIT_FAILURE;
             }
-            sleep(WAIT_SEC);
-            }
-        else
-            {
-            if(!menuMain())
-                {
-                printf("Error Running the Program.\n");
-                printf("Entering to Flashing Mode\n");
-                ucFailSafeMode = 1;
-                }
-            }
-
         }
 
     return 0;

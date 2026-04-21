@@ -1,10 +1,10 @@
 /* student.c - student function library */ 
 /* 
-* Copyright (c) 2026 Trenser Technologies. 
+* Copyright (c) 2026 Trenser Technology solutions. 
 * 
 * The right to copy, distribute, modify, or otherwise make use 
 * of this software may be licensed only pursuant to the terms 
-* of an applicable Trenser Technologies license agreement. 
+* of an applicable Trenser Technology solution license agreement. 
 */
 
 /* includes */ 
@@ -21,6 +21,8 @@ static student* pstHead = NULL; // Head of the linked list of students
 /* locals */ 
 
 /* forward declarations */ 
+bool studentPrintMarks(student* pstInfo);
+bool studentPrintGrades(student* pstInfo);
 
 /*
 * studentAdd - Adds a new student to the linked list of students.
@@ -28,6 +30,7 @@ static student* pstHead = NULL; // Head of the linked list of students
 */
 bool studentAdd(student* pstInfo)
     {
+        student* pstCurrent = NULL;
     if (pstInfo == NULL)
         {
         printf("Invalid student information provided.\n");
@@ -40,7 +43,7 @@ bool studentAdd(student* pstInfo)
         }
     else
         {
-        student* pstCurrent = pstHead;
+        pstCurrent = pstHead;
         while (pstCurrent->pstNext != NULL)
             {
             pstCurrent = pstCurrent->pstNext;
@@ -57,6 +60,7 @@ bool studentAdd(student* pstInfo)
 bool studentCalcSum(student* pstInfo, uint32_t* pulSum)
     {
     uint32_t ulSum = 0;
+    uint8_t ucCount = 0;
     if (pstInfo == NULL || pulSum == NULL)
         {
         printf("Invalid input to studentCalcSum.\n");
@@ -66,12 +70,12 @@ bool studentCalcSum(student* pstInfo, uint32_t* pulSum)
         {
         /* No additional action needed */
         }
-    for (uint8_t i = 0; i < MAX_SUBJECTS; i++)
+    for (ucCount = 0; ucCount < MAX_SUBJECTS; ucCount++)
         {
-        ulSum += pstInfo->ucMarks[i];
+        ulSum += pstInfo->ucMarks[ucCount];
         }
     *pulSum = ulSum;
-    if (*pulSum > MAX_SUBJECTS * 100)
+    if (*pulSum > (MAX_SUBJECTS * MAX_MARK_FOR_SUBJECT))
         {
         printf("Calculated sum of marks is out of valid range.\n");
         return false;
@@ -104,9 +108,9 @@ bool studentCalcAverage(student* pstInfo, float* pfAvg)
         return false;
         }
     *pfAvg = (float)pstInfo->ulSum / MAX_SUBJECTS;
-    if (*pfAvg < 0 || *pfAvg > 100)
+    if (*pfAvg < 0 || *pfAvg > MAX_MARK_FOR_SUBJECT)
         {
-        printf("Calculated average is out of valid range (0-100).\n");
+        printf("Calculated average is out of valid range (0-%u).\n", MAX_MARK_FOR_SUBJECT);
         return false;
         }
     else
@@ -122,6 +126,7 @@ bool studentCalcAverage(student* pstInfo, float* pfAvg)
 */
 bool studentCalcGrades(student* pstInfo, uint8_t* pucGrade)
     {
+    uint8_t ucCount = 0;
     if (pstInfo == NULL || pucGrade == NULL)
         {
         printf("Invalid input to studentCalcGrades.\n");
@@ -131,34 +136,34 @@ bool studentCalcGrades(student* pstInfo, uint8_t* pucGrade)
         {
         /* No additional action needed */
         }
-    if (pstInfo->fAvg >= GRADE_A_THRESHOLD)
+    (void)pucGrade; // Suppress unused variable warning
+    for ( ucCount= 0; ucCount < MAX_SUBJECTS; ucCount++)
         {
-        *pucGrade = GRADE_A;
-        }
-    else if (pstInfo->fAvg >= GRADE_B_THRESHOLD)
-        {
-        *pucGrade = GRADE_B;
-        }
-    else if (pstInfo->fAvg >= GRADE_C_THRESHOLD)
-        {
-        *pucGrade = GRADE_C;
-        }
-    else if (pstInfo->fAvg >= GRADE_D_THRESHOLD)
-        {
-        *pucGrade = GRADE_D;
-        }
-    else
-        {
-        *pucGrade = GRADE_F;
-        }
-    if (*pucGrade > GRADE_F || *pucGrade < GRADE_A)
-        {
-        printf("Calculated grade is out of valid range.\n");
-        return false;
-        }
-    else
-        {
-        /* No additional action needed */
+        if (pstInfo->ucMarks[ucCount] > MAX_MARK_FOR_SUBJECT)
+            {
+            printf("Calculated grade is out of valid range.\n");
+            return false;
+            }
+        else if (pstInfo->ucMarks[ucCount] >= GRADE_A_THRESHOLD && pstInfo->ucMarks[ucCount] <= MAX_MARK_FOR_SUBJECT)
+            {
+            pstInfo->ucGrade[ucCount] = GRADE_A;
+            }
+        else if (pstInfo->ucMarks[ucCount] >= GRADE_B_THRESHOLD)
+            {
+            pstInfo->ucGrade[ucCount] = GRADE_B;
+            }
+        else if (pstInfo->ucMarks[ucCount] >= GRADE_C_THRESHOLD)
+            {
+            pstInfo->ucGrade[ucCount] = GRADE_C;
+            }
+        else if (pstInfo->ucMarks[ucCount] >= GRADE_D_THRESHOLD)
+            {
+            pstInfo->ucGrade[ucCount] = GRADE_D;
+            }
+        else
+            {
+            pstInfo->ucGrade[ucCount] = GRADE_F;
+            }
         }
     return true;
     }
@@ -169,6 +174,18 @@ bool studentCalcGrades(student* pstInfo, uint8_t* pucGrade)
 */
 bool studentUpdateRank(void)
     {
+    uint32_t ulRank = FIRST_RANK;
+    student* pstCurrent = NULL;
+    student* pstOther = NULL;
+     if (pstHead == NULL)
+        {
+        printf("No students available to update rank.\n");
+        return false;
+        }
+    else
+        {
+        /* No additional action needed */
+        }
     if (pstHead == NULL)
         {
         printf("No students available to update rank.\n");
@@ -178,7 +195,7 @@ bool studentUpdateRank(void)
         {
         /* No additional action needed */
         }
-    student* pstCurrent = pstHead;
+    pstCurrent = pstHead;
     if (pstCurrent == NULL)
         {
         printf("No students available to update rank.\n");
@@ -190,8 +207,8 @@ bool studentUpdateRank(void)
         }
     while (pstCurrent != NULL)
         {
-        uint32_t ulRank = 1;
-        student* pstOther = pstHead;
+        ulRank = FIRST_RANK; // Reset rank for each student
+        pstOther = pstHead;
         while (pstOther != NULL)
             {
             if (pstOther->fAvg > pstCurrent->fAvg)
@@ -201,15 +218,6 @@ bool studentUpdateRank(void)
             pstOther = pstOther->pstNext;
             }
         pstCurrent->ulRank = ulRank;
-         if (pstCurrent->ulRank == 0)
-            {
-            printf("Calculated rank is out of valid range.\n");
-            return false;
-            }
-        else
-            {
-            /* No additional action needed */
-            }
         pstCurrent = pstCurrent->pstNext;
         }
         
@@ -224,6 +232,7 @@ bool studentUpdateRank(void)
 bool studentGetCount(uint32_t* pulCount)
     {
     uint32_t ulCount = 0;
+    student* pstCurrent = NULL;
     if (pstHead == NULL)
         {
         printf("No students available to get the count.\n");
@@ -242,7 +251,7 @@ bool studentGetCount(uint32_t* pulCount)
         {
         /* No additional action needed */
         }
-    student* pstCurrent = pstHead;
+    pstCurrent = pstHead;
     while (pstCurrent != NULL)
         {
         ulCount++;
@@ -267,6 +276,7 @@ bool studentGetCount(uint32_t* pulCount)
 bool studentGetAvgMarksOfSubjects(uint8_t* pucAvgMarks)
     {
     uint32_t ulCount = 0;
+    student* pstCurrent = NULL;
     uint32_t ulTotalMarks[MAX_SUBJECTS] = {0};
     if (pucAvgMarks == NULL)
         {
@@ -283,7 +293,7 @@ bool studentGetAvgMarksOfSubjects(uint8_t* pucAvgMarks)
         printf("No students available to list.\n");
         return false;
         }
-    student* pstCurrent = pstHead;
+    pstCurrent = pstHead;
     while (pstCurrent != NULL)
         {
         for (uint8_t i = 0; i < MAX_SUBJECTS; i++)
@@ -305,7 +315,7 @@ bool studentGetAvgMarksOfSubjects(uint8_t* pucAvgMarks)
     for (uint8_t i = 0; i < MAX_SUBJECTS; i++)
         {
         pucAvgMarks[i] = (uint8_t)(ulTotalMarks[i] / ulCount);
-         if (pucAvgMarks[i] > 100)
+         if (pucAvgMarks[i] > MAX_MARK_FOR_SUBJECT)
             {
             printf("Calculated average marks for subject %d is out of valid range.\n", i + 1);
             return false;
@@ -323,6 +333,8 @@ bool studentGetAvgMarksOfSubjects(uint8_t* pucAvgMarks)
 */
 bool studentDeleteByName(uint8_t* pucName)
     {
+    student* pstCurrent = NULL;
+    student* pstPrevious = NULL;
     if (pucName == NULL)
         {
         printf("Invalid name input.\n");
@@ -333,11 +345,10 @@ bool studentDeleteByName(uint8_t* pucName)
         printf("No students available to list.\n");
         return false;
         }
-    student* pstCurrent = pstHead;
-    student* pstPrevious = NULL;
+    pstCurrent = pstHead;
     while (pstCurrent != NULL)
         {
-        if (strcmp((char*)pstCurrent->pucName, (char*)pucName) == 0)
+        if (strcmp((char*)pstCurrent->ucName, (char*)pucName) == 0)
             {
             if (pstPrevious == NULL)
                 {
@@ -355,7 +366,7 @@ bool studentDeleteByName(uint8_t* pucName)
         pstCurrent = pstCurrent->pstNext;
         }
     printf("Student with name %s not found.\n", pucName);
-    free(pucName);
+
     return false;
     }
 
@@ -365,14 +376,14 @@ bool studentDeleteByName(uint8_t* pucName)
 */
 bool studentDeleteByRoll(uint32_t ulRoll)
     {
-    
+    student* pstCurrent = NULL;
+    student* pstPrevious = NULL;
     if(pstHead == NULL)
         {
         printf("No students available to list.\n");
         return false;
         }
-    student* pstCurrent = pstHead;
-    student* pstPrevious = NULL;
+    pstCurrent = pstHead;
     while (pstCurrent != NULL)
         {
         if (pstCurrent->ulRoll == ulRoll)
@@ -393,6 +404,7 @@ bool studentDeleteByRoll(uint32_t ulRoll)
         pstCurrent = pstCurrent->pstNext;
         }
     printf("Student with roll number %u not found.\n", ulRoll);
+
     return false;
     }
 /*
@@ -401,24 +413,31 @@ bool studentDeleteByRoll(uint32_t ulRoll)
 */
 bool studentDeleteAll(void)
     {
+    student* pstCurrent = NULL;
+    student* pstTemp = NULL;
     if(pstHead == NULL)
         {
         printf("No students available to list.\n");
         return false;
         }
-    student* pstCurrent = pstHead;
+    pstCurrent = pstHead;
     while (pstCurrent != NULL)
         {
-        student* pstTemp = pstCurrent;
+        pstTemp = pstCurrent;
         pstCurrent = pstCurrent->pstNext;
         free(pstTemp);
         }
     pstHead = NULL;
+
     return true;
     }
-
+/*
+* studentListSearchByName - Searches for a student by name.
+* return -  true if successful, false otherwise.
+*/
 bool studentListSearchByName(uint8_t* pucName)
     {
+    student* pstCurrent = NULL;
     if (pucName == NULL)
         {
         printf("Invalid name input.\n");
@@ -429,27 +448,40 @@ bool studentListSearchByName(uint8_t* pucName)
         printf("No students available to list.\n");
         return false;
         }
-        student* pstCurrent = pstHead;
-    if (pstCurrent == NULL)
+    pstCurrent = pstHead;
+    while(pstCurrent != NULL)
         {
-        printf("No students available to search.\n");
-        return false;
-        }
-    while (pstCurrent != NULL)
-        {
-        if (strncmp((char*)pstCurrent->pucName, (char*)pucName, MAX_NAME_LENGTH) == 0)
+        if(strncmp((char*)pstCurrent->ucName, (char*)pucName, MAX_NAME_LENGTH) == 0)
             {
             printf("Student found:\n");
-            if (!studentPrintInfo(pstCurrent))
+            printf("Name: %s | Roll: %u | Average: %.2f | Rank: %u | Address: %s |\n",
+               pstCurrent->ucName,
+               pstCurrent->ulRoll,
+               pstCurrent->fAvg,
+               pstCurrent->ulRank,
+               pstCurrent->ucAddress
+               );
+            if(studentPrintMarks(pstCurrent))
                 {
-                printf("Failed to print student information.\n");
-                return false;
+                if(!studentPrintGrades(pstCurrent))
+                    {
+                    printf("Failed to print grades for student %s.\n", pstCurrent->ucName);
+                    }
+                else
+                    {
+                        /* No additional action needed */
+                    }
+                }
+            else
+                {
+                printf("Failed to print marks for student %s.\n", pstCurrent->ucName);
                 }
             return true;
             }
         pstCurrent = pstCurrent->pstNext;
         }
     printf("Student with name %s not found.\n", pucName);
+
     return false;
     }
 
@@ -457,42 +489,42 @@ bool studentListSearchByName(uint8_t* pucName)
 * return -  true if successful, false otherwise.
 */
 
-bool studentPrintInfo(student* pstInfo)
+bool studentPrintInfo(void)
     {
-    if (pstInfo == NULL)
-        {
-        printf("No student information available to print.\n");
-        return false;
-        }
-    else
-        {/* No additional action needed */
-        }
+    student* pstCurrent = NULL;
     if(pstHead == NULL)
         {
         printf("No students available to list.\n");
         return false;
         }
-    student* pstCurrent = pstHead;
-    if (pstCurrent == NULL)
-        {
-        printf("No students available to list.\n");
-        return false;
-        }
-    else
-        {/* No additional action needed */
-        }
-    
+    pstCurrent = pstHead;
     while (pstCurrent != NULL)
         {
-        
-        printf("Name: %s, Roll: %d, Average: %.2f, Grade: %c, Rank: %d\n",
-               pstCurrent->pucName,
+        printf("Name: %s | Roll: %u | Average: %.2f | Rank: %u | Address: %s |\n",
+               pstCurrent->ucName,
                pstCurrent->ulRoll,
                pstCurrent->fAvg,
-               pstCurrent->ucGrade,
-               pstCurrent->ulRank);
+               pstCurrent->ulRank,
+               pstCurrent->ucAddress
+               );
+        if(studentPrintMarks(pstCurrent))
+            {
+            if(!studentPrintGrades(pstCurrent))
+                {
+                printf("Failed to print grades for student %s.\n", pstCurrent->ucName);
+                }
+            else
+                {
+                    /* No additional action needed */
+                }
+            }
+        else
+            {
+            printf("Failed to print marks for student %s.\n", pstCurrent->ucName);
+            }
         pstCurrent = pstCurrent->pstNext;
         }
+
     return true;
     }
 
@@ -501,6 +533,9 @@ bool studentPrintInfo(student* pstInfo)
 */
 bool studentListSortByRoll(void)
     {
+    student* pstCurrent = NULL;
+    student* pstTemp = NULL;
+    student temp = {0};
     if(pstHead == NULL)
         {
         printf("No students available to list.\n");
@@ -511,31 +546,35 @@ bool studentListSortByRoll(void)
         printf("One student available to list.\n");
         return false;
         }
-        student* pstCurrent = pstHead;
-        student* pstTemp = pstHead->pstNext;
+        pstCurrent = pstHead;
+        pstTemp = pstHead->pstNext;
         while (pstCurrent != NULL)
         {
-
-                if(pstTemp->ulRoll < pstCurrent->ulRoll)
-                {
-                    // Swap the student information
-                    student temp = *pstCurrent;
-                    *pstCurrent = *pstTemp;
-                    *pstTemp = temp;
-                }
-            pstCurrent = pstCurrent->pstNext;
+            while (pstTemp != NULL)
+            {
+            if(pstTemp->ulRoll < pstCurrent->ulRoll)
+            {
+                // Swap the student information
+                temp = *pstCurrent;
+                *pstCurrent = *pstTemp;
+                *pstTemp = temp;
+            }
+            pstTemp = pstTemp->pstNext;
+            }
+        pstCurrent = pstCurrent->pstNext;
 
         }
-    if(studentPrintInfo(pstHead))
+    if(studentPrintInfo())
         {
+        printf("Students sorted by roll number successfully.\n");
         return true;
         }
     else
         {
         printf("Failed to print student information after sorting.\n");
         }
+
     return false;
-    
     }
 
 /** studentListSortByName - Sorts the student list by name.
@@ -543,6 +582,9 @@ bool studentListSortByRoll(void)
 */
 bool studentListSortByName(void)
     {
+    student* pstCurrent = NULL;
+    student* pstTemp = NULL;
+    student temp = {0};
     if(pstHead == NULL)
         {
         printf("No students available to list.\n");
@@ -553,32 +595,42 @@ bool studentListSortByName(void)
         printf("Only one student available\n");
         return false;
         }
-        student* pstCurrent = pstHead;
-        student* pstTemp = pstHead->pstNext;
-        while (pstCurrent != NULL)
+    pstCurrent = pstHead;
+    pstTemp = pstCurrent;
+    while (pstCurrent != NULL)
         {
-            if(strncmp((char*)pstTemp->pucName, (char*)pstCurrent->pucName, MAX_NAME_LENGTH) < 0)
+        while (pstTemp != NULL)
+            {
+            if(strncmp((char*)pstTemp->ucName, (char*)pstCurrent->ucName, MAX_NAME_LENGTH) < 0)
             {
                 // Swap the student information
-                student temp = *pstCurrent;
+                temp = *pstCurrent;
                 *pstCurrent = *pstTemp;
                 *pstTemp = temp;
             }
-            pstCurrent = pstCurrent->pstNext;
+            pstTemp = pstTemp->pstNext;
+            }
+        pstCurrent = pstCurrent->pstNext;
+        pstTemp = pstCurrent; // Reset temp to current for the next iteration
         }
-        if(studentPrintInfo(pstHead))
+        if(studentPrintInfo())
         {
+        printf("Students sorted by name successfully.\n");
         return true;
         }
     else
         {
         printf("Failed to print student information after sorting.\n");
         }
+
         return false;
     }
 
 bool studentListSortByRank(void)
     {
+    student* pstCurrent = NULL;
+    student* pstTemp = NULL;
+    student temp = {0};
     if(pstHead == NULL)
         {
         printf("No students available to list.\n");
@@ -589,21 +641,27 @@ bool studentListSortByRank(void)
         printf("Only one student available\n");
         return false;
         }
-        student* pstCurrent = pstHead;
-        student* pstTemp = pstHead->pstNext;
-        while (pstCurrent != NULL)
+    pstCurrent = pstHead;
+    pstTemp = pstHead->pstNext;
+    while(pstCurrent != NULL)
         {
-                if(pstTemp->ulRank < pstCurrent->ulRank)
+            while(pstTemp != NULL)
+            {
+            if(pstTemp->ulRank < pstCurrent->ulRank)
                 {
                     // Swap the student information
-                    student temp = *pstCurrent;
+                    temp = *pstCurrent;
                     *pstCurrent = *pstTemp;
                     *pstTemp = temp;
                 }
+            pstTemp = pstTemp->pstNext;
+            }
             pstCurrent = pstCurrent->pstNext;
+            pstTemp = pstCurrent; // Reset temp to current for the next iteration
         }
-    if(studentPrintInfo(pstHead))
+    if(studentPrintInfo())
         {
+        printf("Students sorted by rank successfully.\n");
         return true;
         }
     else
@@ -611,5 +669,43 @@ bool studentListSortByRank(void)
         printf("Failed to print student information after sorting.\n");
         return false;
         }
+
+    return true;
+    }
+
+bool studentPrintMarks(student* pstInfo)
+    {
+    if (pstInfo == NULL)
+        {
+        printf("Invalid student information provided.\n");
+        return false;
+        }
+    else
+        {
+        /* No additional action needed */
+        }
+    for (uint8_t i = 0; i < MAX_SUBJECTS; i++)
+        {
+        printf("Subject %d: %u\n", i + 1, pstInfo->ucMarks[i]);
+        }
+
+    return true;
+    }
+
+bool studentPrintGrades(student* pstInfo)
+    {
+    if (pstInfo == NULL)
+        {
+        printf("Invalid student information provided.\n");
+        return false;
+        }
+    else
+        { /* No additional action needed */
+        }
+    for (uint8_t i = 0; i < MAX_SUBJECTS; i++)
+        {
+        printf("Subject %d Grade: %c\n", i + 1, pstInfo->ucGrade[i]);
+        }
+
     return true;
     }
