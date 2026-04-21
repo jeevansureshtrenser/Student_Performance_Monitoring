@@ -12,12 +12,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "student.h"
+
 /* defines */ 
 
 /* typedefs */ 
 
 /* globals */ 
 static student* pstHead = NULL; // Head of the linked list of students
+
 /* locals */ 
 
 /* forward declarations */ 
@@ -30,7 +32,7 @@ static bool studentPrintGrades(student* pstInfo);
 */
 bool studentAdd(student* pstInfo)
     {
-        student* pstCurrent = NULL;
+    student* pstCurrent = NULL;
     if (pstInfo == NULL)
         {
         printf("Invalid student information provided.\n");
@@ -717,7 +719,8 @@ static bool studentPrintGrades(student* pstInfo)
         return false;
         }
     else
-        { /* No additional action needed */
+        {
+        /* No additional action needed */
         }
     for (ucCount = 0; ucCount < MAX_SUBJECTS; ucCount++)
         {
