@@ -21,8 +21,8 @@ static student* pstHead = NULL; // Head of the linked list of students
 /* locals */ 
 
 /* forward declarations */ 
-bool studentPrintMarks(student* pstInfo);
-bool studentPrintGrades(student* pstInfo);
+static bool studentPrintMarks(student* pstInfo);
+static bool studentPrintGrades(student* pstInfo);
 
 /*
 * studentAdd - Adds a new student to the linked list of students.
@@ -53,6 +53,7 @@ bool studentAdd(student* pstInfo)
         }
     return true;
     }
+
 /*
 * studentCalcSum - Calculates the sum of marks for a student.
 * return -  true if successful, false otherwise.
@@ -86,6 +87,7 @@ bool studentCalcSum(student* pstInfo, uint32_t* pulSum)
         }
     return true;
     }
+
 /*
 * studentCalcAverage - Calculates the average of marks for a student.
 * return -  true if successful, false otherwise.
@@ -269,6 +271,7 @@ bool studentGetCount(uint32_t* pulCount)
         }
     return true;
     }
+
 /*
 * studentGetAvgMarksOfSubjects - Calculates the average marks for each subject.
 * return -  true if successful, false otherwise.
@@ -277,6 +280,7 @@ bool studentGetAvgMarksOfSubjects(uint8_t* pucAvgMarks)
     {
     uint32_t ulCount = 0;
     student* pstCurrent = NULL;
+    uint8_t ucCount = 0;
     uint32_t ulTotalMarks[MAX_SUBJECTS] = {0};
     if (pucAvgMarks == NULL)
         {
@@ -296,9 +300,9 @@ bool studentGetAvgMarksOfSubjects(uint8_t* pucAvgMarks)
     pstCurrent = pstHead;
     while (pstCurrent != NULL)
         {
-        for (uint8_t i = 0; i < MAX_SUBJECTS; i++)
+        for (ucCount = 0; ucCount < MAX_SUBJECTS; ucCount++)
             {
-            ulTotalMarks[i] += pstCurrent->ucMarks[i];
+            ulTotalMarks[ucCount] += pstCurrent->ucMarks[ucCount];
             }
         ulCount++;
         pstCurrent = pstCurrent->pstNext;
@@ -312,12 +316,12 @@ bool studentGetAvgMarksOfSubjects(uint8_t* pucAvgMarks)
         {
         /* No additional action needed */
         }
-    for (uint8_t i = 0; i < MAX_SUBJECTS; i++)
+    for (ucCount = 0; ucCount < MAX_SUBJECTS; ucCount++)
         {
-        pucAvgMarks[i] = (uint8_t)(ulTotalMarks[i] / ulCount);
-         if (pucAvgMarks[i] > MAX_MARK_FOR_SUBJECT)
+        pucAvgMarks[ucCount] = (uint8_t)(ulTotalMarks[ucCount] / ulCount);
+         if (pucAvgMarks[ucCount] > MAX_MARK_FOR_SUBJECT)
             {
-            printf("Calculated average marks for subject %d is out of valid range.\n", i + 1);
+            printf("Calculated average marks for subject %d is out of valid range.\n", ucCount + 1);
             return false;
             }
          else
@@ -327,6 +331,7 @@ bool studentGetAvgMarksOfSubjects(uint8_t* pucAvgMarks)
         }
     return true;
     }
+
 /*
 * studentDeleteByName - Deletes a student by name.
 * return -  true if successful, false otherwise.
@@ -407,6 +412,7 @@ bool studentDeleteByRoll(uint32_t ulRoll)
 
     return false;
     }
+
 /*
 * studentDeleteAll - Deletes all students from the list.
 * return -  true if successful, false otherwise.
@@ -431,6 +437,7 @@ bool studentDeleteAll(void)
 
     return true;
     }
+
 /*
 * studentListSearchByName - Searches for a student by name.
 * return -  true if successful, false otherwise.
@@ -488,7 +495,6 @@ bool studentListSearchByName(uint8_t* pucName)
 /** studentPrintInfo - Displays information for a single student.
 * return -  true if successful, false otherwise.
 */
-
 bool studentPrintInfo(void)
     {
     student* pstCurrent = NULL;
@@ -626,6 +632,9 @@ bool studentListSortByName(void)
         return false;
     }
 
+/** studentListSortByRank - Sorts the student list by rank.
+* return -  true if successful, false otherwise.
+*/
 bool studentListSortByRank(void)
     {
     student* pstCurrent = NULL;
@@ -673,8 +682,12 @@ bool studentListSortByRank(void)
     return true;
     }
 
-bool studentPrintMarks(student* pstInfo)
+/** studentPrintMarks - Prints marks for a student.
+* return -  true if successful, false otherwise.
+*/
+static bool studentPrintMarks(student* pstInfo)
     {
+    uint8_t ucCount = 0;
     if (pstInfo == NULL)
         {
         printf("Invalid student information provided.\n");
@@ -684,16 +697,20 @@ bool studentPrintMarks(student* pstInfo)
         {
         /* No additional action needed */
         }
-    for (uint8_t i = 0; i < MAX_SUBJECTS; i++)
+    for (ucCount = 0; ucCount < MAX_SUBJECTS; ucCount++)
         {
-        printf("Subject %d: %u\n", i + 1, pstInfo->ucMarks[i]);
+        printf("Subject %d: %u\n", ucCount + 1, pstInfo->ucMarks[ucCount]);
         }
 
     return true;
     }
 
-bool studentPrintGrades(student* pstInfo)
+/** studentPrintGrades - Prints grades for a student.
+* return -  true if successful, false otherwise.
+*/
+static bool studentPrintGrades(student* pstInfo)
     {
+    uint8_t ucCount = 0;
     if (pstInfo == NULL)
         {
         printf("Invalid student information provided.\n");
@@ -702,9 +719,9 @@ bool studentPrintGrades(student* pstInfo)
     else
         { /* No additional action needed */
         }
-    for (uint8_t i = 0; i < MAX_SUBJECTS; i++)
+    for (ucCount = 0; ucCount < MAX_SUBJECTS; ucCount++)
         {
-        printf("Subject %d Grade: %c\n", i + 1, pstInfo->ucGrade[i]);
+        printf("Subject %d Grade: %c\n", ucCount + 1, pstInfo->ucGrade[ucCount]);
         }
 
     return true;
