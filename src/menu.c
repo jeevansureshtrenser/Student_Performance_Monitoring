@@ -25,7 +25,7 @@
 /* locals */ 
 
 /* forward declarations */ 
-static bool menuFailSafeMode();
+static bool menuFailSafeMode(void);
 static bool menuRemoveNewline(uint8_t* pucBuffer);
 static bool menuGetInput(uint8_t* pucBuffer, uint32_t ulBufferSize);
 static bool menuFillMarks(uint8_t* pucMarks);
@@ -34,6 +34,8 @@ static bool menuCalcAverageAndGrade(student* pstInfo);
 static bool menuPrintMainMenu(void);
 static bool menuPrintListMenu(void);
 static bool menuPrintDeleteMenu(void);
+static bool menuFillStudentNode(student* pstInfo);
+static bool menuInputStudentNameAddress(student* pstInfo);
 
 /* Function pointers for main menu options */
 static bool (*menuFunctionptr[MENU_OPTIONS_COUNT])(void) = 
@@ -63,7 +65,7 @@ static bool (*menuDeleteFunctionsptr[DELETE_OPTIONS_COUNT])(void) =
 /** menuPrintMainMenu - Displays the main menu List.
 * return -  true if successful, false otherwise.
 */
-bool menuPrintMainMenu(void)
+static bool menuPrintMainMenu(void)
     {
     bool bReturn = false;
     printf("\n=== Student Performance Monitoring System ===\n");
@@ -81,10 +83,34 @@ bool menuPrintMainMenu(void)
                             {
                                 bReturn = true;
                             }
+                        else
+                            {
+                            /* No additional action needed */
+                            }
+                        }
+                    else
+                        {
+                        /* No additional action needed */
                         }
                     }
+                else
+                    {
+                    /* No additional action needed */
+                    }
+                }
+            else
+                {
+                /* No additional action needed */
                 }
             }
+        else
+            {
+            /* No additional action needed */
+            }
+        }
+    else
+        {
+        /* No additional action needed */
         }
 
     return bReturn;
@@ -93,31 +119,59 @@ bool menuPrintMainMenu(void)
 /** menuPrintListMenu - Displays the list student menu and handles user input.
 * return -  true if successful, false otherwise.
 */
-bool menuPrintListMenu(void)
+static bool menuPrintListMenu(void)
     {
     bool bReturn = false;
     if(printf("\n=== List Student Menu ===\n") > 0)
-    {
-        if(printf("1. Search by Name\n") > 0)
         {
-            if(printf("2. Sort by Name\n") > 0)
+        if(printf("1. Search by Name\n") > 0)
             {
-                if(printf("3. Sort by Roll Number\n") > 0)
+            if(printf("2. Sort by Name\n") > 0)
                 {
-                    if(printf("4. Sort by Rank\n") > 0)
+                if(printf("3. Sort by Roll Number\n") > 0)
                     {
-                        if(printf("5. All Students\n") > 0)
+                    if(printf("4. Sort by Rank\n") > 0)
                         {
-                            if(printf("Enter your choice: ") > 0)
+                        if(printf("5. All Students\n") > 0)
                             {
+                            if(printf("9. Back to Main Menu\n") > 0)
+                                {
                                 bReturn = true;
+                                }
+                            else
+                                {
+                                /* No additional action needed */
+                                }
+                            }
+                        else
+                            {
+                            /* No additional action needed */
                             }
                         }
+                    else
+                        {
+                        /* No additional action needed */
+                        }
+                    }
+                else
+                    {
+                    /* No additional action needed */
                     }
                 }
+            else
+                {
+                /* No additional action needed */
+                }
+            }
+        else
+            {
+            /* No additional action needed */
             }
         }
-    }
+    else
+        {
+        /* No additional action needed */
+        }
 
     return bReturn;
     }
@@ -129,21 +183,41 @@ static bool menuPrintDeleteMenu(void)
     {
     bool bReturn = false;
     if(printf("\n=== Delete Student Menu ===\n") > 0)
-    {
-        if(printf("1. Delete by Name\n") > 0)
         {
-            if(printf("2. Delete by Roll Number\n") > 0)
+        if(printf("1. Delete by Name\n") > 0)
             {
-                if(printf("3. Delete All\n") > 0)
+            if(printf("2. Delete by Roll Number\n") > 0)
                 {
-                    if(printf("Enter your choice: ") > 0)
+                if(printf("3. Delete All\n") > 0)
                     {
+                    if(printf("9. Back to Main Menu\n") > 0)
+                        {
                         bReturn = true;
+                        }
+                        else
+                        {
+                        /* No additional action needed */
+                        }
+                    }
+                    else
+                    {
+                    /* No additional action needed */
                     }
                 }
+                else
+                    {
+                    /* No additional action needed */
+                    }
+            }
+            else
+            {
+                /* No additional action needed */
             }
         }
-    }
+    else
+        {
+            /* No additional action needed */
+        }
 
     return bReturn;
     }
@@ -331,7 +405,7 @@ static bool menuFillMarks(uint8_t* pucMarks)
     }
 
 /*
-* menuFillStudentInfo - Fills the information for a student.
+* menuFillStudentInfo - Fills the information for a student and marks.
 * return -  true if successful, false otherwise.
 */
 static bool menuFillStudentInfo(student* pstInfo)
@@ -345,22 +419,17 @@ static bool menuFillStudentInfo(student* pstInfo)
         }
     else
         {
-        printf("Enter Student Name: ");
-        if (!menuGetInput(pstInfo->ucName, MAX_NAME_LENGTH))
+        if(!menuInputStudentNameAddress(pstInfo))
             {
-            printf("Failed to get student name.\n");
-            bReturn = false;
-            }
-        else if (pstInfo->ucName[INDEX_ZERO] == NULL_CHAR)
-            {
-            printf("Invalid name input.\n");
+            printf("Failed to get student name and address.\n");
             bReturn = false;
             }
         else
             {
             printf("Enter Roll Number: ");
             iReadCount = scanf("%d", &pstInfo->ulRoll);
-            if (pstInfo->ulRoll == 0 || iReadCount == 0)
+            if (pstInfo->ulRoll == 0 || 
+                pstInfo->ulRoll > MAX_STUDENTS_OCCUPANCY || iReadCount == 0)
                 {
                 printf("Invalid roll number.\n");
                 bReturn = false;
@@ -375,16 +444,7 @@ static bool menuFillStudentInfo(student* pstInfo)
                     }
                 else
                     {
-                    printf("Enter Student Address: ");
-                    if (!menuGetInput(pstInfo->ucAddress, MAX_ADDRESS_LENGTH))
-                        {
-                        printf("Failed to get student address.\n");
-                        bReturn = false;
-                        }
-                    else
-                        {
-                            /* No additional action needed */
-                        }
+                    bReturn = true;
                     }
                 }
             }
@@ -418,48 +478,20 @@ static bool menuAddStudent(void)
         else
             {
             memset(newStudent, 0, sizeof(student)); // Initialize the allocated memory to zero
-
-            if (!menuFillStudentInfo(newStudent))
+            if (!menuFillStudentNode(newStudent))
                 {
-                printf("Failed to add student. Please try again.\n");
+                printf("Failed to fill student information.\n");
                 free(newStudent);
                 bReturn = false;
                 }
             else
                 {
-                if(!menuCalcAverageAndGrade(newStudent))
-                    {
-                    printf("Failed to calculate average and grade.\n");
-                    free(newStudent);
-                    bReturn = false;
-                    }
-                else
-                    {
-                    if (!studentAdd(newStudent))
-                        {
-                        printf("Failed to add student to the system.\n");
-                        free(newStudent);
-                        bReturn = false;
-                        }
-                    else
-                        {
-                        if (!studentUpdateRank())
-                            {
-                            printf("Failed to update student ranks.\n");
-                            free(newStudent);
-                            bReturn = false;
-                            }
-                        else
-                            {
-                            s_ulStudentCount++; // Increment the student count
-                            printf("Student added successfully!\n");
-                            bReturn = true;
-                            }
-                        }
-                    }
+                s_ulStudentCount++; // Increment the student count
+                printf("Student added successfully!\n");
+                printf("Total Students: %u\n", s_ulStudentCount);
+                bReturn = true;
                 }
             }
-       
         }
 
     return bReturn;
@@ -493,6 +525,14 @@ static bool menuListStudent(void)
                     {
                     bReturn = false;
                     }
+                    else
+                    {
+                        /* No additional action needed */
+                    }
+                }
+            else if(ucOption == BACK_MENU) // Back to Main Menu
+                {
+                bReturn = true;
                 }
             else
                 {
@@ -535,6 +575,14 @@ static bool menuDeleteStudent(void)
                 {
                 bReturn = false;
                 }
+                else
+                {
+                    /* No additional action needed */
+                }
+            }
+        else if(ucOption == BACK_MENU) // Back to Main Menu
+            {
+            bReturn = true;
             }
         else
             {
@@ -748,7 +796,7 @@ static bool menuFailSafeMode()
     printf("Waiting for shutdown........\n");
      while (s_ucFailCount < MAX_TRY_COUNT) 
         {
-        ucChar = getchar();
+        ucChar = getchar(); // this is a blocking function, it wait for input from user
         if(ucChar == '*')
         {
             printf("Restart Application\n");
@@ -834,6 +882,104 @@ static bool menuCalcAverageAndGrade(student* pstInfo)
                     }
                 }
             }
+
+    return bReturn;
+    }
+
+/*
+* menuFillStudentNode - Fills student node with information.
+* return -  true if successful, false otherwise.
+*/
+static bool menuFillStudentNode(student* pstInfo)
+    {
+    bool bReturn = true;
+    if (pstInfo == NULL)
+        {
+        printf("Invalid student information.\n");
+        bReturn = false;
+        }
+    else
+        {
+    if (!menuFillStudentInfo(pstInfo))
+        {
+        printf("Failed to add student. Please try again.\n");
+        bReturn = false;
+        }
+        else
+            {
+            if(!menuCalcAverageAndGrade(pstInfo))
+                {
+                printf("Failed to calculate average and grade.\n");
+                bReturn = false;
+                }
+            else
+                {
+                if (!studentAdd(pstInfo))
+                    {
+                    printf("Failed to add student to the system.\n");
+                    bReturn = false;
+                    }
+                else
+                    {
+                    if (!studentUpdateRank())
+                        {
+                        printf("Failed to update student ranks.\n");
+                        bReturn = false;
+                        }
+                    else
+                        {
+                        bReturn = true;
+                        }
+                    }
+                }
+            }
+        }
+
+    return bReturn;
+    }
+
+/*
+* menuInputStudentNameAddress - Get student name and address from user.
+* return -  true if successful, false otherwise.
+*/
+static bool menuInputStudentNameAddress(student* pstInfo)
+    {
+    bool bReturn = true;
+    if (pstInfo == NULL)
+        {
+        printf("Invalid student information.\n");
+        bReturn = false;
+        }
+    else
+        {
+        printf("Enter Student Name: ");
+        if (!menuGetInput(pstInfo->ucName, MAX_NAME_LENGTH))
+            {
+            printf("Failed to get student name.\n");
+            bReturn = false;
+            }
+        else
+            {
+            if (pstInfo->ucName[INDEX_ZERO] == NULL_CHAR)
+                {
+                printf("Invalid name input.\n");
+                bReturn = false;
+                }
+            else
+                {
+                printf("Enter Student Address: ");
+                if (!menuGetInput(pstInfo->ucAddress, MAX_ADDRESS_LENGTH))
+                    {
+                    printf("Failed to get student address.\n");
+                    bReturn = false;
+                    }
+                else
+                    {
+                    /* No additional action needed */
+                    }
+                }
+            }
+        }
 
     return bReturn;
     }

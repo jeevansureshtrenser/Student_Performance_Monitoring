@@ -20,6 +20,7 @@
 #define MENU_OPTIONS_COUNT 4U
 #define LIST_OPTIONS_COUNT 5U
 #define DELETE_OPTIONS_COUNT 3U
+#define BACK_MENU 9U
 
 #define WAIT_SEC 1U
 #define MAX_TRY_COUNT 5U
@@ -37,8 +38,6 @@ typedef enum
     } MENU_OPTIONS;
 
 /* function declarations */
-
-
 
 bool menuMain(void);			// Displays  "main menu"
 
@@ -61,5 +60,5 @@ static bool menuListStudentInfo(void);		// Show all student list without sorting
 static bool menuDeleteByName(void);		// Ask name, and delete student
 static bool menuDeleteByRoll(void);		// Ask Roll, and delete student
 static bool menuDeleteAll(void);			// Delete all students
-// Failsafe mode
+
 #endif // __INCmenuh
